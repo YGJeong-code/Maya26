@@ -3,6 +3,7 @@
 YG_rigging_ui
 Skin / Set / Joint / Utility / Naming UI
 since 2026.04.02
+last updated 2026.04.10
 by YeonGyun,Jeong
 """
 
@@ -107,9 +108,10 @@ class YG_RiggingWindow(QtWidgets.QWidget):
         self.joint_group.setLayout(joint_layout)
 
     def create_utility_layout(self):
-        self.makeLocator_btn  = QtWidgets.QPushButton('Make Locator')
-        self.getMidpoint_btn  = QtWidgets.QPushButton('Get Midpoint')
-        self.deletePasted_btn = QtWidgets.QPushButton('Delete Pasted')
+        self.makeLocator_btn      = QtWidgets.QPushButton('Make Locator')
+        self.getMidpoint_btn      = QtWidgets.QPushButton('Get Midpoint')
+        self.deletePasted_btn     = QtWidgets.QPushButton('Delete Pasted')
+        self.footContactAttr_btn  = QtWidgets.QPushButton('Add Foot Contact Attr')
 
         self.outlinerColor_btns = {}
         color_items = list(utility.OUTLINER_COLORS.items())
@@ -147,6 +149,7 @@ class YG_RiggingWindow(QtWidgets.QWidget):
         utility_layout = QtWidgets.QVBoxLayout()
         utility_layout.addLayout(locator_layout)
         utility_layout.addWidget(self.deletePasted_btn)
+        utility_layout.addWidget(self.footContactAttr_btn)
         utility_layout.addLayout(color_btn_layout)
         self.utility_group.setLayout(utility_layout)
 
@@ -239,6 +242,7 @@ class YG_RiggingWindow(QtWidgets.QWidget):
         self.makeLocator_btn.clicked.connect(self.on_button_pressed)
         self.getMidpoint_btn.clicked.connect(self.on_button_pressed)
         self.deletePasted_btn.clicked.connect(self.on_button_pressed)
+        self.footContactAttr_btn.clicked.connect(self.on_button_pressed)
         # Naming
         self.rename_btn.clicked.connect(self.on_naming_pressed)
         self.addPrefix_btn.clicked.connect(self.on_naming_pressed)
@@ -290,6 +294,8 @@ class YG_RiggingWindow(QtWidgets.QWidget):
             utility.getMidpoint()
         elif sender == self.deletePasted_btn:
             utility.deletePasted()
+        elif sender == self.footContactAttr_btn:
+            utility.addFootContactAttr()
 
     def on_naming_pressed(self):
         sender = self.sender()

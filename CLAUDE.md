@@ -23,6 +23,11 @@ importlib.reload(ui)
 ui.show()
 ```
 
+## Maya 환경 설정
+
+`userSetup.py`가 Maya 시작 시 자동으로 스크립트 경로를 추가한다.
+위치: `C:/Users/yg_jeong/Documents/maya/2025/scripts/userSetup.py`
+
 ## 폴더 구조
 
 ```
@@ -31,11 +36,11 @@ MayaScripts/
 │   ├── ui/
 │   │   └── YG_rigging_ui.py     # 메인 UI (workspaceControl 기반, 도킹 지원)
 │   ├── module/
-│   │   ├── skin.py              # Skin Transfer, Zero Weight 제거
+│   │   ├── skin.py              # Skin Transfer (Multi↔One), Zero Weight 제거
 │   │   ├── joint.py             # Root/IK/위치 기반 조인트 생성
 │   │   ├── set.py               # Skin Set, Export Set 생성
 │   │   ├── naming.py            # Rename, Prefix/Suffix, Search/Replace
-│   │   └── utility.py           # Locator, Midpoint, Outliner Color
+│   │   └── utility.py           # Locator, Midpoint, Outliner Color, Foot Contact Attr
 │   ├── icon/
 │   │   └── YG_Tools.png
 │   └── shelf_YG_rigging.py      # 셸프 버튼 설치 스크립트
@@ -50,6 +55,7 @@ MayaScripts/
 - Maya API: `maya.cmds` (일반) / `OpenMaya 2.0` (고성능)
 - UI: PySide6 (우선) / PySide2 (fallback), `workspaceControl` 기반으로 도킹 지원
 - 스크립트 최상단에 Maya 버전 호환 범위 명시
+- 파일 수정 시 docstring의 `last updated` 날짜를 당일로 갱신
 
 ```python
 # Compatible: Maya 2022+
@@ -68,3 +74,18 @@ import rigging.module.set     as set_
 import rigging.module.naming  as naming
 import rigging.module.utility as utility
 ```
+
+## UI 카테고리
+
+| 카테고리 | 기능 |
+|----------|------|
+| Window | Dock / UnDock (Maya 좌측 도킹) |
+| Skin Transfer | Multi → One, One → Multi, Delete Zero Weight Joint |
+| Set | Edit Set, Set - Skin, Set - Export (Body/Face/Hair) |
+| Joint | Make Root Joint, Make IK Joint, Make Joint To Sel |
+| Utility | Make Locator, Get Midpoint, Delete Pasted, Add Foot Contact Attr, Outliner Color (10색) |
+| Naming | Rename (A/B/C/D + Side), Add Prefix, Add Suffix, Search/Replace |
+
+## GitHub
+
+Repository: https://github.com/YGJeong-code/Maya26
