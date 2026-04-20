@@ -28,6 +28,20 @@ def makeIKJoint():
     cmds.parentConstraint('hand_r', 'ik_hand_r', mo=False)
 
 
+def makeWeaponJoint():
+    """hand_l, hand_r 자식으로 weapon 조인트 생성"""
+    cmds.select(cl=True)
+    weapon_map = [('hand_l', 'weapon_l'), ('hand_r', 'weapon_r')]
+    for hand, weapon in weapon_map:
+        if not cmds.objExists(hand):
+            cmds.warning('{} 조인트가 존재하지 않습니다.'.format(hand))
+            continue
+        myJnt = cmds.joint(n=weapon)
+        cmds.matchTransform(myJnt, hand)
+        cmds.parent(myJnt, hand)
+        cmds.select(cl=True)
+
+
 def makeJointToSel():
     """선택한 오브젝트 또는 버텍스 위치에 조인트 생성"""
     mySel = cmds.ls(sl=True, flatten=True)

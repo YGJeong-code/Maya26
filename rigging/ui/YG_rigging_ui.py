@@ -3,7 +3,7 @@
 YG_rigging_ui
 Skin / Set / Joint / Utility / Naming UI
 since 2026.04.02
-last updated 2026.04.10
+last updated 2026.04.17
 by YeonGyun,Jeong
 """
 
@@ -75,13 +75,14 @@ class YG_RiggingWindow(QtWidgets.QWidget):
         self.skinSet_btn   = QtWidgets.QPushButton('Set - Skin')
         self.exportSet_btn = QtWidgets.QPushButton('Set - Export')
 
-        self.rbtn_body = QtWidgets.QRadioButton('Body')
-        self.rbtn_face = QtWidgets.QRadioButton('Face')
-        self.rbtn_hair = QtWidgets.QRadioButton('Hair')
+        self.rbtn_body     = QtWidgets.QRadioButton('Body')
+        self.rbtn_face     = QtWidgets.QRadioButton('Face')
+        self.rbtn_fullbody = QtWidgets.QRadioButton('FullBody')
+        self.rbtn_hair     = QtWidgets.QRadioButton('Hair')
         self.rbtn_body.setChecked(True)
 
         radio_layout = QtWidgets.QHBoxLayout()
-        for btn in (self.rbtn_body, self.rbtn_face, self.rbtn_hair):
+        for btn in (self.rbtn_body, self.rbtn_face, self.rbtn_fullbody, self.rbtn_hair):
             radio_layout.addWidget(btn)
 
         self.set_group = QtWidgets.QGroupBox(title='Set')
@@ -93,17 +94,16 @@ class YG_RiggingWindow(QtWidgets.QWidget):
         self.set_group.setLayout(set_layout)
 
     def create_joint_layout(self):
-        self.makeRootJoint_btn  = QtWidgets.QPushButton('Make Root Joint')
-        self.makeIKJoint_btn    = QtWidgets.QPushButton('Make IK Joint')
-        self.makeJointToSel_btn = QtWidgets.QPushButton('Make Joint To Sel')
-
-        top_layout = QtWidgets.QHBoxLayout()
-        top_layout.addWidget(self.makeRootJoint_btn)
-        top_layout.addWidget(self.makeIKJoint_btn)
+        self.makeRootJoint_btn   = QtWidgets.QPushButton('Make Root Joint')
+        self.makeIKJoint_btn     = QtWidgets.QPushButton('Make IK Joint')
+        self.makeWeaponJoint_btn = QtWidgets.QPushButton('Make Weapon Joint')
+        self.makeJointToSel_btn  = QtWidgets.QPushButton('Make Joint To Sel')
 
         self.joint_group = QtWidgets.QGroupBox(title='Joint')
         joint_layout = QtWidgets.QVBoxLayout()
-        joint_layout.addLayout(top_layout)
+        joint_layout.addWidget(self.makeRootJoint_btn)
+        joint_layout.addWidget(self.makeIKJoint_btn)
+        joint_layout.addWidget(self.makeWeaponJoint_btn)
         joint_layout.addWidget(self.makeJointToSel_btn)
         self.joint_group.setLayout(joint_layout)
 
@@ -237,6 +237,7 @@ class YG_RiggingWindow(QtWidgets.QWidget):
         # Joint
         self.makeRootJoint_btn.clicked.connect(self.on_button_pressed)
         self.makeIKJoint_btn.clicked.connect(self.on_button_pressed)
+        self.makeWeaponJoint_btn.clicked.connect(self.on_button_pressed)
         self.makeJointToSel_btn.clicked.connect(self.on_button_pressed)
         # Utility
         self.makeLocator_btn.clicked.connect(self.on_button_pressed)
@@ -270,9 +271,10 @@ class YG_RiggingWindow(QtWidgets.QWidget):
             set_.skinJointSet()
         elif sender == self.exportSet_btn:
             part_map = {
-                self.rbtn_body: ('Body', set_.exportJointSet),
-                self.rbtn_face: ('Face', set_.exportJointSet),
-                self.rbtn_hair: ('Hair', set_.exportJointSet),
+                self.rbtn_body:     ('Body',     set_.exportJointSet),
+                self.rbtn_face:     ('Face',     set_.exportJointSet),
+                self.rbtn_fullbody: ('FullBody', set_.exportJointSet),
+                self.rbtn_hair:     ('Hair',     set_.exportJointSet),
             }
             for rbtn, (name, fn) in part_map.items():
                 if rbtn.isChecked():
@@ -284,6 +286,8 @@ class YG_RiggingWindow(QtWidgets.QWidget):
             joint.makeRootJoint()
         elif sender == self.makeIKJoint_btn:
             joint.makeIKJoint()
+        elif sender == self.makeWeaponJoint_btn:
+            joint.makeWeaponJoint()
         elif sender == self.makeJointToSel_btn:
             joint.makeJointToSel()
 

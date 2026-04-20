@@ -37,8 +37,8 @@ MayaScripts/
 │   │   └── YG_rigging_ui.py     # 메인 UI (workspaceControl 기반, 도킹 지원)
 │   ├── module/
 │   │   ├── skin.py              # Skin Transfer (Multi↔One), Zero Weight 제거
-│   │   ├── joint.py             # Root/IK/위치 기반 조인트 생성
-│   │   ├── set.py               # Skin Set, Export Set 생성
+│   │   ├── joint.py             # Root/IK/Weapon/위치 기반 조인트 생성
+│   │   ├── set.py               # Skin Set, Export Set 생성 (FullBody: IK+Weapon 포함)
 │   │   ├── naming.py            # Rename, Prefix/Suffix, Search/Replace
 │   │   └── utility.py           # Locator, Midpoint, Outliner Color, Foot Contact Attr
 │   ├── icon/
@@ -81,8 +81,8 @@ import rigging.module.utility as utility
 |----------|------|
 | Window | Dock / UnDock (Maya 좌측 도킹) |
 | Skin Transfer | Multi → One, One → Multi, Delete Zero Weight Joint |
-| Set | Edit Set, Set - Skin, Set - Export (Body/Face/Hair) |
-| Joint | Make Root Joint, Make IK Joint, Make Joint To Sel |
+| Set | Edit Set, Set - Skin, Set - Export (Body/Face/FullBody/Hair) |
+| Joint | Make Root Joint, Make IK Joint, Make Weapon Joint, Make Joint To Sel |
 | Utility | Make Locator, Get Midpoint, Delete Pasted, Add Foot Contact Attr, Outliner Color (10색) |
 | Naming | Rename (A/B/C/D + Side), Add Prefix, Add Suffix, Search/Replace |
 
