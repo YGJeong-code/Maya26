@@ -3,7 +3,7 @@
 YG_rigging_ui
 Skin / Set / Joint / Utility / Naming UI
 since 2026.04.02
-last updated 2026.04.17
+last updated 2026.05.18
 by YeonGyun,Jeong
 """
 
@@ -74,6 +74,7 @@ class YG_RiggingWindow(QtWidgets.QWidget):
         self.editSet_btn   = QtWidgets.QPushButton('Edit Set')
         self.skinSet_btn   = QtWidgets.QPushButton('Set - Skin')
         self.exportSet_btn = QtWidgets.QPushButton('Set - Export')
+        self.aniSet_btn    = QtWidgets.QPushButton('Set - Ani')
 
         self.rbtn_body     = QtWidgets.QRadioButton('Body')
         self.rbtn_face     = QtWidgets.QRadioButton('Face')
@@ -91,6 +92,7 @@ class YG_RiggingWindow(QtWidgets.QWidget):
         set_layout.addWidget(self.skinSet_btn)
         set_layout.addLayout(radio_layout)
         set_layout.addWidget(self.exportSet_btn)
+        set_layout.addWidget(self.aniSet_btn)
         self.set_group.setLayout(set_layout)
 
     def create_joint_layout(self):
@@ -111,7 +113,7 @@ class YG_RiggingWindow(QtWidgets.QWidget):
         self.makeLocator_btn      = QtWidgets.QPushButton('Make Locator')
         self.getMidpoint_btn      = QtWidgets.QPushButton('Get Midpoint')
         self.deletePasted_btn     = QtWidgets.QPushButton('Delete Pasted')
-        self.footContactAttr_btn  = QtWidgets.QPushButton('Add Foot Contact Attr')
+        self.makeMeshGroups_btn   = QtWidgets.QPushButton('Make Mesh Groups')
 
         self.outlinerColor_btns = {}
         color_items = list(utility.OUTLINER_COLORS.items())
@@ -149,7 +151,7 @@ class YG_RiggingWindow(QtWidgets.QWidget):
         utility_layout = QtWidgets.QVBoxLayout()
         utility_layout.addLayout(locator_layout)
         utility_layout.addWidget(self.deletePasted_btn)
-        utility_layout.addWidget(self.footContactAttr_btn)
+        utility_layout.addWidget(self.makeMeshGroups_btn)
         utility_layout.addLayout(color_btn_layout)
         self.utility_group.setLayout(utility_layout)
 
@@ -234,6 +236,7 @@ class YG_RiggingWindow(QtWidgets.QWidget):
         self.editSet_btn.clicked.connect(self.on_button_pressed)
         self.skinSet_btn.clicked.connect(self.on_button_pressed)
         self.exportSet_btn.clicked.connect(self.on_button_pressed)
+        self.aniSet_btn.clicked.connect(self.on_button_pressed)
         # Joint
         self.makeRootJoint_btn.clicked.connect(self.on_button_pressed)
         self.makeIKJoint_btn.clicked.connect(self.on_button_pressed)
@@ -243,7 +246,7 @@ class YG_RiggingWindow(QtWidgets.QWidget):
         self.makeLocator_btn.clicked.connect(self.on_button_pressed)
         self.getMidpoint_btn.clicked.connect(self.on_button_pressed)
         self.deletePasted_btn.clicked.connect(self.on_button_pressed)
-        self.footContactAttr_btn.clicked.connect(self.on_button_pressed)
+        self.makeMeshGroups_btn.clicked.connect(self.on_button_pressed)
         # Naming
         self.rename_btn.clicked.connect(self.on_naming_pressed)
         self.addPrefix_btn.clicked.connect(self.on_naming_pressed)
@@ -280,6 +283,8 @@ class YG_RiggingWindow(QtWidgets.QWidget):
                 if rbtn.isChecked():
                     fn(name)
                     break
+        elif sender == self.aniSet_btn:
+            set_.exportAniSet()
 
         # Joint
         elif sender == self.makeRootJoint_btn:
@@ -298,8 +303,8 @@ class YG_RiggingWindow(QtWidgets.QWidget):
             utility.getMidpoint()
         elif sender == self.deletePasted_btn:
             utility.deletePasted()
-        elif sender == self.footContactAttr_btn:
-            utility.addFootContactAttr()
+        elif sender == self.makeMeshGroups_btn:
+            utility.makeMeshGroups()
 
     def on_naming_pressed(self):
         sender = self.sender()

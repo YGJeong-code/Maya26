@@ -2,20 +2,6 @@
 from maya import cmds
 
 
-def addFootContactAttr():
-    """foot_l, foot_r 본에 contact_l, contact_r 어트리뷰트 추가"""
-    foot_attr = [('foot_l', 'contact_l'), ('foot_r', 'contact_r')]
-    for bone, attr in foot_attr:
-        if not cmds.objExists(bone):
-            cmds.warning('{} 본이 존재하지 않습니다.'.format(bone))
-            continue
-        if cmds.attributeQuery(attr, node=bone, exists=True):
-            cmds.warning('{}.{} 어트리뷰트가 이미 존재합니다.'.format(bone, attr))
-            continue
-        cmds.addAttr(bone, longName=attr, attributeType='float', min=0, max=1, defaultValue=0, keyable=True)
-        print('{}.{} 어트리뷰트 추가 완료'.format(bone, attr))
-
-
 def makeLocator():
     """선택 오브젝트 위치에 로케이터 생성"""
     mySel = cmds.ls(sl=True)
@@ -45,6 +31,16 @@ def deletePasted():
     mySel = cmds.ls(sl=True)
     for i in mySel:
         cmds.rename(i, i.replace('pasted__', ''))
+
+
+def makeMeshGroups():
+    """mesh_grp(최상위) > face_mesh_grp / body_mesh_grp / fullbody_mesh_grp 생성"""
+    if not cmds.objExists('mesh_grp'):
+        cmds.group(n='mesh_grp', em=True, world=True)
+    for child in ('face_mesh_grp', 'body_mesh_grp', 'fullbody_mesh_grp'):
+        if not cmds.objExists(child):
+            cmds.group(n=child, em=True, parent='mesh_grp')
+    cmds.select(cl=True)
 
 
 OUTLINER_COLORS = {
