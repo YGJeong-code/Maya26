@@ -14,11 +14,11 @@ Maya Python 스크립트 툴 모음. 리깅 중심으로 구성.
 
 | 모듈 | 기능 |
 |------|------|
-| `module/skin.py` | Skin Transfer (Multi↔One), Zero Weight 제거 |
-| `module/joint.py` | Root/IK/Weapon/위치 기반 조인트 생성 |
-| `module/set.py` | Skin Set, Export Set 생성 (FullBody: IK+Weapon 포함) |
+| `module/skin.py` | Skin Transfer (Multi↔One), Zero Weight 조인트 제거 |
+| `module/joint.py` | Root/IK/Weapon/Attach/위치 기반 조인트 생성 |
+| `module/set.py` | Skin Set, Export Set (Body/Face/FullBody/Hair), Ani Set (export_ani, UE5 표준 본) |
 | `module/naming.py` | Rename, Prefix/Suffix, Search/Replace |
-| `module/utility.py` | Locator, Midpoint, Outliner Color, Foot Contact Attr |
+| `module/utility.py` | Locator, Midpoint, Delete Pasted, Mesh Groups, Skin Ani (검수용 회전 키), Outliner Color (10색) |
 
 ## 실행 방법
 

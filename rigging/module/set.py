@@ -38,11 +38,18 @@ def exportJointSet(myExportName):
             cmds.select(myList, add=True)
         for i in cmds.ls(sl=True):
             myExportSel.append(i)
-    # FullBody: weapon, IK 본 추가
-    if myExportName == 'FullBody':
-        extra = ['ik_foot_root', 'ik_foot_l', 'ik_foot_r',
+    # Face: neck_01 이하 모든 조인트 추가
+    if myExportName == 'Face' and cmds.objExists('neck_01'):
+        faceJNT = ['neck_01'] + (cmds.listRelatives('neck_01', ad=True, type='joint', f=False) or [])
+        for jnt in faceJNT:
+            if jnt not in myExportSel:
+                myExportSel.append(jnt)
+    # Body / FullBody: neck, head, IK, weapon, attach 본 추가
+    if myExportName in ('Body', 'FullBody'):
+        extra = ['neck_01', 'neck_02', 'head',
+                 'ik_foot_root', 'ik_foot_l', 'ik_foot_r',
                  'ik_hand_root', 'ik_hand_l', 'ik_hand_r',
-                 'weapon_l', 'weapon_r']
+                 'weapon_l', 'weapon_r', 'attach']
         for jnt in extra:
             if cmds.objExists(jnt) and jnt not in myExportSel:
                 myExportSel.append(jnt)

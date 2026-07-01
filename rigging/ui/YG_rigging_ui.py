@@ -3,7 +3,7 @@
 YG_rigging_ui
 Skin / Set / Joint / Utility / Naming UI
 since 2026.04.02
-last updated 2026.05.18
+last updated 2026.07.01
 by YeonGyun,Jeong
 """
 
@@ -38,6 +38,7 @@ class YG_RiggingWindow(QtWidgets.QWidget):
 
         self.create_window_layout()
         self.create_skin_layout()
+        self.create_skinani_layout()
         self.create_set_layout()
         self.create_joint_layout()
         self.create_utility_layout()
@@ -70,6 +71,16 @@ class YG_RiggingWindow(QtWidgets.QWidget):
         skin_layout.addWidget(self.deleteZeroWeight_btn)
         self.skin_group.setLayout(skin_layout)
 
+    def create_skinani_layout(self):
+        self.makeSkinAni_btn   = QtWidgets.QPushButton('Make Skin Ani')
+        self.deleteSkinAni_btn = QtWidgets.QPushButton('Delete Skin Ani')
+
+        self.skinani_group = QtWidgets.QGroupBox(title='Skin Ani')
+        skinani_layout = QtWidgets.QVBoxLayout()
+        skinani_layout.addWidget(self.makeSkinAni_btn)
+        skinani_layout.addWidget(self.deleteSkinAni_btn)
+        self.skinani_group.setLayout(skinani_layout)
+
     def create_set_layout(self):
         self.editSet_btn   = QtWidgets.QPushButton('Edit Set')
         self.skinSet_btn   = QtWidgets.QPushButton('Set - Skin')
@@ -99,6 +110,7 @@ class YG_RiggingWindow(QtWidgets.QWidget):
         self.makeRootJoint_btn   = QtWidgets.QPushButton('Make Root Joint')
         self.makeIKJoint_btn     = QtWidgets.QPushButton('Make IK Joint')
         self.makeWeaponJoint_btn = QtWidgets.QPushButton('Make Weapon Joint')
+        self.makeAttachJoint_btn = QtWidgets.QPushButton('Make Attach Joint')
         self.makeJointToSel_btn  = QtWidgets.QPushButton('Make Joint To Sel')
 
         self.joint_group = QtWidgets.QGroupBox(title='Joint')
@@ -106,6 +118,7 @@ class YG_RiggingWindow(QtWidgets.QWidget):
         joint_layout.addWidget(self.makeRootJoint_btn)
         joint_layout.addWidget(self.makeIKJoint_btn)
         joint_layout.addWidget(self.makeWeaponJoint_btn)
+        joint_layout.addWidget(self.makeAttachJoint_btn)
         joint_layout.addWidget(self.makeJointToSel_btn)
         self.joint_group.setLayout(joint_layout)
 
@@ -215,6 +228,7 @@ class YG_RiggingWindow(QtWidgets.QWidget):
         self.main_layout = QtWidgets.QVBoxLayout(self)
         self.main_layout.addWidget(self.window_group)
         self.main_layout.addWidget(self.skin_group)
+        self.main_layout.addWidget(self.skinani_group)
         self.main_layout.addWidget(self.set_group)
         self.main_layout.addWidget(self.joint_group)
         self.main_layout.addWidget(self.utility_group)
@@ -232,6 +246,9 @@ class YG_RiggingWindow(QtWidgets.QWidget):
         self.skinTransferMultiToOne_btn.clicked.connect(self.on_button_pressed)
         self.skinTransferOneToMulti_btn.clicked.connect(self.on_button_pressed)
         self.deleteZeroWeight_btn.clicked.connect(self.on_button_pressed)
+        # Skin Ani
+        self.makeSkinAni_btn.clicked.connect(self.on_button_pressed)
+        self.deleteSkinAni_btn.clicked.connect(self.on_button_pressed)
         # Set
         self.editSet_btn.clicked.connect(self.on_button_pressed)
         self.skinSet_btn.clicked.connect(self.on_button_pressed)
@@ -241,6 +258,7 @@ class YG_RiggingWindow(QtWidgets.QWidget):
         self.makeRootJoint_btn.clicked.connect(self.on_button_pressed)
         self.makeIKJoint_btn.clicked.connect(self.on_button_pressed)
         self.makeWeaponJoint_btn.clicked.connect(self.on_button_pressed)
+        self.makeAttachJoint_btn.clicked.connect(self.on_button_pressed)
         self.makeJointToSel_btn.clicked.connect(self.on_button_pressed)
         # Utility
         self.makeLocator_btn.clicked.connect(self.on_button_pressed)
@@ -266,6 +284,12 @@ class YG_RiggingWindow(QtWidgets.QWidget):
             skin.skinTransferOneToMulti()
         elif sender == self.deleteZeroWeight_btn:
             skin.deleteZeroWeightJoint()
+
+        # Skin Ani
+        elif sender == self.makeSkinAni_btn:
+            utility.makeSkinAni()
+        elif sender == self.deleteSkinAni_btn:
+            utility.deleteSkinAni()
 
         # Set
         elif sender == self.editSet_btn:
@@ -293,6 +317,8 @@ class YG_RiggingWindow(QtWidgets.QWidget):
             joint.makeIKJoint()
         elif sender == self.makeWeaponJoint_btn:
             joint.makeWeaponJoint()
+        elif sender == self.makeAttachJoint_btn:
+            joint.makeAttachJoint()
         elif sender == self.makeJointToSel_btn:
             joint.makeJointToSel()
 

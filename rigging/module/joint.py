@@ -42,6 +42,18 @@ def makeWeaponJoint():
         cmds.select(cl=True)
 
 
+def makeAttachJoint():
+    """root 자식으로 attach 조인트 생성 (root와 동일한 트랜스폼)"""
+    if not cmds.objExists('root'):
+        cmds.warning('root 조인트가 존재하지 않습니다.')
+        return
+    cmds.select(cl=True)
+    myJnt = cmds.joint(n='attach')
+    cmds.matchTransform(myJnt, 'root')
+    cmds.parent(myJnt, 'root')
+    cmds.select(cl=True)
+
+
 def makeJointToSel():
     """선택한 오브젝트 또는 버텍스 위치에 조인트 생성"""
     mySel = cmds.ls(sl=True, flatten=True)
