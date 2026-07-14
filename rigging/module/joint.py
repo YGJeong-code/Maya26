@@ -11,6 +11,14 @@ def makeRootJoint():
 def makeIKJoint():
     """발/손 IK 컨트롤 조인트 생성 및 계층 구성"""
     myList = ['ik_foot_root', 'ik_foot_l', 'ik_foot_r', 'ik_hand_root', 'ik_hand_l', 'ik_hand_r']
+
+    # 이미 IK 조인트가 있으면 새로 만들지 않는다.
+    existing = [i for i in myList if cmds.objExists(i)]
+    if existing:
+        cmds.warning('IK 조인트가 이미 존재합니다: {}'.format(', '.join(existing)))
+        return
+
+    cmds.select(cl=True)
     for i in myList:
         myJnt = cmds.joint(n=i)
         cmds.setAttr(myJnt + '.radius', 1)
@@ -33,6 +41,9 @@ def makeWeaponJoint():
     cmds.select(cl=True)
     weapon_map = [('hand_l', 'weapon_l'), ('hand_r', 'weapon_r')]
     for hand, weapon in weapon_map:
+        if cmds.objExists(weapon):
+            cmds.warning('{} 조인트가 이미 존재합니다.'.format(weapon))
+            continue
         if not cmds.objExists(hand):
             cmds.warning('{} 조인트가 존재하지 않습니다.'.format(hand))
             continue

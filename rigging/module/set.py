@@ -2,6 +2,19 @@
 from maya import cmds
 
 
+def _createOrUpdateSet(setName, members):
+    """같은 이름의 세트가 있으면 멤버를 교체(업데이트)하고, 없으면 새로 생성한다."""
+    if cmds.objExists(setName):
+        if cmds.nodeType(setName) != 'objectSet':
+            cmds.warning('{} 이름의 노드가 세트가 아니라 건너뜁니다.'.format(setName))
+            return
+        cmds.sets(clear=setName)
+        if members:
+            cmds.sets(members, forceElement=setName)
+    else:
+        cmds.sets(members, n=setName)
+
+
 def skinJointSet():
     """선택 메시의 스킨 조인트로 Set 생성"""
     mySel = cmds.ls(sl=True)
@@ -54,8 +67,7 @@ def exportJointSet(myExportName):
             if cmds.objExists(jnt) and jnt not in myExportSel:
                 myExportSel.append(jnt)
 
-    cmds.select(myExportSel, r=True)
-    cmds.sets(n='export_set_{}'.format(myExportName))
+    _createOrUpdateSet('export_set_{}'.format(myExportName), myExportSel)
     cmds.select(cl=True)
 
 
@@ -84,6 +96,5 @@ def exportAniSet():
     if not exists:
         cmds.warning('export_ani: 씬에 해당 본이 존재하지 않습니다.')
         return
-    cmds.select(exists, r=True)
-    cmds.sets(n='export_ani')
+    _createOrUpdateSet('export_ani', exists)
     cmds.select(cl=True)

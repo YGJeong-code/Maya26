@@ -3,7 +3,7 @@
 YG_rigging_ui
 Skin / Set / Joint / Utility / Naming UI
 since 2026.04.02
-last updated 2026.07.01
+last updated 2026.07.10
 by YeonGyun,Jeong
 """
 
@@ -63,12 +63,19 @@ class YG_RiggingWindow(QtWidgets.QWidget):
         self.skinTransferMultiToOne_btn = QtWidgets.QPushButton('Multi → One')
         self.skinTransferOneToMulti_btn = QtWidgets.QPushButton('One → Multi')
         self.deleteZeroWeight_btn       = QtWidgets.QPushButton('Delete Zero Weight Joint')
+        self.saveSkin_btn               = QtWidgets.QPushButton('Save Skin')
+        self.loadSkin_btn               = QtWidgets.QPushButton('Load Skin')
+
+        skinIO_layout = QtWidgets.QHBoxLayout()
+        skinIO_layout.addWidget(self.saveSkin_btn)
+        skinIO_layout.addWidget(self.loadSkin_btn)
 
         self.skin_group = QtWidgets.QGroupBox(title='Skin Transfer')
         skin_layout = QtWidgets.QVBoxLayout()
         skin_layout.addWidget(self.skinTransferMultiToOne_btn)
         skin_layout.addWidget(self.skinTransferOneToMulti_btn)
         skin_layout.addWidget(self.deleteZeroWeight_btn)
+        skin_layout.addLayout(skinIO_layout)
         self.skin_group.setLayout(skin_layout)
 
     def create_skinani_layout(self):
@@ -91,10 +98,11 @@ class YG_RiggingWindow(QtWidgets.QWidget):
         self.rbtn_face     = QtWidgets.QRadioButton('Face')
         self.rbtn_fullbody = QtWidgets.QRadioButton('FullBody')
         self.rbtn_hair     = QtWidgets.QRadioButton('Hair')
+        self.rbtn_outfit   = QtWidgets.QRadioButton('Outfit')
         self.rbtn_body.setChecked(True)
 
         radio_layout = QtWidgets.QHBoxLayout()
-        for btn in (self.rbtn_body, self.rbtn_face, self.rbtn_fullbody, self.rbtn_hair):
+        for btn in (self.rbtn_body, self.rbtn_face, self.rbtn_fullbody, self.rbtn_hair, self.rbtn_outfit):
             radio_layout.addWidget(btn)
 
         self.set_group = QtWidgets.QGroupBox(title='Set')
@@ -246,6 +254,8 @@ class YG_RiggingWindow(QtWidgets.QWidget):
         self.skinTransferMultiToOne_btn.clicked.connect(self.on_button_pressed)
         self.skinTransferOneToMulti_btn.clicked.connect(self.on_button_pressed)
         self.deleteZeroWeight_btn.clicked.connect(self.on_button_pressed)
+        self.saveSkin_btn.clicked.connect(self.on_button_pressed)
+        self.loadSkin_btn.clicked.connect(self.on_button_pressed)
         # Skin Ani
         self.makeSkinAni_btn.clicked.connect(self.on_button_pressed)
         self.deleteSkinAni_btn.clicked.connect(self.on_button_pressed)
@@ -284,6 +294,10 @@ class YG_RiggingWindow(QtWidgets.QWidget):
             skin.skinTransferOneToMulti()
         elif sender == self.deleteZeroWeight_btn:
             skin.deleteZeroWeightJoint()
+        elif sender == self.saveSkin_btn:
+            skin.saveSkinWeights()
+        elif sender == self.loadSkin_btn:
+            skin.loadSkinWeights()
 
         # Skin Ani
         elif sender == self.makeSkinAni_btn:
@@ -302,6 +316,7 @@ class YG_RiggingWindow(QtWidgets.QWidget):
                 self.rbtn_face:     ('Face',     set_.exportJointSet),
                 self.rbtn_fullbody: ('FullBody', set_.exportJointSet),
                 self.rbtn_hair:     ('Hair',     set_.exportJointSet),
+                self.rbtn_outfit:   ('Outfit',   set_.exportJointSet),
             }
             for rbtn, (name, fn) in part_map.items():
                 if rbtn.isChecked():

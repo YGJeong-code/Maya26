@@ -34,7 +34,12 @@ def deletePasted():
 
 
 def _arm_moves(s):
-    """팔 회전 이동 리스트 (s: 'L'/'R') — 어깨, 상박, 하박, 손목"""
+    """팔 회전 이동 리스트 (s: 'L'/'R') — 어깨, 상박, 하박, 손목, 손가락 curl
+
+    손목 다음에 Fingers_<s> 컨트롤러의 curl 어트리뷰트 키:
+    index/middle/ring/pinky curl 한 키 → thumb curl 다음 키 (각각 8).
+    축 자리에 attr 리스트를 넣으면 curl 스텝으로 처리된다(회전 rx/ry/rz 대신 지정 attr만 키).
+    """
     return [
         ('FKScapula_' + s,  'ry', -30),
         ('FKShoulder_' + s, 'ry', -80),
@@ -45,6 +50,8 @@ def _arm_moves(s):
         ('FKWrist_' + s,    'ry', -60),
         ('FKWrist_' + s,    'rx', -80),
         ('FKWrist_' + s,    'rx',  80),
+        ('Fingers_' + s, ['indexCurl', 'middleCurl', 'ringCurl', 'pinkyCurl'], 8),
+        ('Fingers_' + s, ['thumbCurl'], 8),
     ]
 
 
@@ -95,14 +102,21 @@ def _skinAniMoves():
             + _arm_moves('R') + _leg_moves('R'))
 
 
-def _skinAniControls():
-    """makeSkinAni가 다루는 모든 컨트롤러 목록 (중복 제거, 순서 유지)"""
-    ctrls = []
-    for ctrl, axis, value in _skinAniMoves():
-        for c in ((ctrl,) if isinstance(ctrl, str) else tuple(ctrl)):
-            if c not in ctrls:
-                ctrls.append(c)
-    return ctrls
+def _skinAniTargets():
+    """makeSkinAni가 키하는 {컨트롤러: [어트리뷰트,...]} 매핑 (deleteSkinAni 초기화용).
+
+    회전 스텝은 rx/ry/rz, curl 스텝(축 자리가 리스트)은 지정한 curl 어트리뷰트.
+    """
+    targets = {}
+    for ctrl, key2, value in _skinAniMoves():
+        ctrls = (ctrl,) if isinstance(ctrl, str) else tuple(ctrl)
+        attrs = tuple(key2) if isinstance(key2, (list, tuple)) else ('rx', 'ry', 'rz')
+        for c in ctrls:
+            cur = targets.setdefault(c, [])
+            for a in attrs:
+                if a not in cur:
+                    cur.append(a)
+    return targets
 
 
 def makeSkinAni():
@@ -120,18 +134,29 @@ def makeSkinAni():
             cmds.warning('{} 컨트롤러가 존재하지 않습니다.'.format(leg))
 
     moves = _skinAniMoves()
-    axes = ('rx', 'ry', 'rz')
     frame = 0
-    for ctrl, axis, value in moves:
+    for ctrl, key2, value in moves:
         ctrls = (ctrl,) if isinstance(ctrl, str) else tuple(ctrl)
+        is_curl = isinstance(key2, (list, tuple))   # 축 자리가 리스트면 curl 스텝
         for c in ctrls:
             if not cmds.objExists(c):
                 cmds.warning('{} 컨트롤러가 존재하지 않습니다.'.format(c))
                 continue
-            for a in axes:
-                cmds.setKeyframe(c, attribute=a, value=0, time=frame)
-                cmds.setKeyframe(c, attribute=a, value=(value if a == axis else 0), time=frame + 2)
-                cmds.setKeyframe(c, attribute=a, value=0, time=frame + 4)
+            if is_curl:
+                # curl 스텝: 지정 어트리뷰트만 0 -> value(+2f) -> 0(+4f)
+                for attr in key2:
+                    if not cmds.objExists(c + '.' + attr):
+                        cmds.warning('{}.{} 어트리뷰트가 없습니다.'.format(c, attr))
+                        continue
+                    cmds.setKeyframe(c, attribute=attr, value=0, time=frame)
+                    cmds.setKeyframe(c, attribute=attr, value=value, time=frame + 2)
+                    cmds.setKeyframe(c, attribute=attr, value=0, time=frame + 4)
+            else:
+                # 회전 스텝: rx/ry/rz 전부 0, 지정 축만 value(+2f)
+                for a in ('rx', 'ry', 'rz'):
+                    cmds.setKeyframe(c, attribute=a, value=0, time=frame)
+                    cmds.setKeyframe(c, attribute=a, value=(value if a == key2 else 0), time=frame + 2)
+                    cmds.setKeyframe(c, attribute=a, value=0, time=frame + 4)
         frame += 4
 
     # 타임라인을 애니메이션 길이에 맞춤 (마지막 키 = frame)
@@ -141,14 +166,27 @@ def makeSkinAni():
 
 
 def deleteSkinAni():
-    """makeSkinAni로 생성한 회전 키를 삭제하고 회전값을 0으로 초기화"""
-    for c in _skinAniControls():
+    """makeSkinAni로 생성한 키를 삭제하고 값을 0으로 초기화 (회전 + 손가락 curl)
+
+    + makeSkinAni가 FK로 낮춘 다리 FKIKBlend를 10(IK)으로 복원, 타임라인 0-30 초기화.
+    """
+    for c, attrs in _skinAniTargets().items():
         if not cmds.objExists(c):
             continue
-        for a in ('rx', 'ry', 'rz'):
+        for a in attrs:
+            if not cmds.objExists(c + '.' + a):
+                continue
             cmds.cutKey(c, attribute=a, clear=True)
             if cmds.getAttr(c + '.' + a, settable=True):
                 cmds.setAttr(c + '.' + a, 0)
+
+    # makeSkinAni가 0(FK)으로 낮춘 다리 FKIKBlend 복원 (10 = IK)
+    for leg in ('FKIKLeg_L', 'FKIKLeg_R'):
+        if cmds.objExists(leg) and cmds.objExists(leg + '.FKIKBlend'):
+            if cmds.getAttr(leg + '.FKIKBlend', settable=True):
+                cmds.setAttr(leg + '.FKIKBlend', 10)
+        else:
+            cmds.warning('{} 컨트롤러가 존재하지 않습니다.'.format(leg))
 
     # 타임라인을 0-30으로 초기화
     cmds.playbackOptions(min=0, max=30, animationStartTime=0, animationEndTime=30)
@@ -157,10 +195,10 @@ def deleteSkinAni():
 
 
 def makeMeshGroups():
-    """mesh_grp(최상위) > face_mesh_grp / body_mesh_grp / fullbody_mesh_grp / outfit_mesh_grp 생성"""
+    """mesh_grp(최상위) > face_mesh_grp / body_mesh_grp / fullbody_mesh_grp / outfit_mesh_grp / hair_mesh_grp 생성"""
     if not cmds.objExists('mesh_grp'):
         cmds.group(n='mesh_grp', em=True, world=True)
-    for child in ('face_mesh_grp', 'body_mesh_grp', 'fullbody_mesh_grp', 'outfit_mesh_grp'):
+    for child in ('face_mesh_grp', 'body_mesh_grp', 'fullbody_mesh_grp', 'outfit_mesh_grp', 'hair_mesh_grp'):
         if not cmds.objExists(child):
             cmds.group(n=child, em=True, parent='mesh_grp')
     cmds.select(cl=True)
